@@ -1,0 +1,36 @@
+name = "server"
+main = "src/index.ts"
+compatibility_date = "2024-12-12"
+
+# compatibility_flags = [ "nodejs_compat" ]
+
+[vars]
+DATABASE_URL="prisma://accelerate.prisma-data.net/?api_key=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhcGlfa2V5IjoiYjNhMTVkNjYtNjVkMS00MDllLTkwNmUtY2Y2MTFiNTQzZDc1IiwidGVuYW50X2lkIjoiNTljN2VlYTU4ZjNhOTA0NTJlNGVmZTJmOTdmNzNkMmZjNDY3NGI5ZTFkYmRmY2E4MjNmNzc1NjQ2Nzk5MGFlOSIsImludGVybmFsX3NlY3JldCI6ImUxMWFmMWZiLWRjYTctNDg0Yi04Nzk0LWQ1ZTY4MWU1NTEwMiJ9.lPJesMNpXqFRhtO-ZzUh_97Dn116JDK8_vPAoaSZE90"
+JWT_SECRET='DERpwGlyhtRXYC6yoTTk'
+#MY_VAR ="my-variable"
+
+assets = { directory = "public" }
+
+#[wasm_modules]
+#name = "query_engine"
+#path = "./node_modules/@prisma/engines/libquery_engine_wasm.so.node"
+
+# [[kv_namespaces]]
+# binding = "MY_KV_NAMESPACE"
+# id = "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+
+# [[r2_buckets]]
+# binding = "MY_BUCKET"
+# bucket_name = "my-bucket"
+
+# [[d1_databases]]
+# binding = "DB"
+# database_name = "my-database"
+# database_id = ""
+
+# [ai]
+# binding = "AI"
+
+# [observability]
+# enabled = true
+# head_sampling_rate = 1

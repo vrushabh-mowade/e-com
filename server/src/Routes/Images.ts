@@ -16,19 +16,24 @@ imagerouter.post('/', async (c) => {
         const { productId, url, altText } = await c.req.json();
         const image = await prisma.image.create({
             data: {
-                url: productId,
-                productId: url,
+                url: url,
+                productId: productId,
                 altText: altText
 
             }
         });
 
-        if (image) {
+        if(!image){
+            c.json({
+                msg : "error uploading image"
+            })
+        }
+
+    
             c.status(200);
             c.json({
                 msg: "upload the product image"
             })
-        }
 
     } catch (error) {
         console.error("Error is :", error);

@@ -11,7 +11,7 @@ type Bindings = {
 export const searchrouter = new Hono<{ Bindings: Bindings }>();
 
 
-
+//need to work on this
 searchrouter.get('/',async (c)=>{
     const prisma = new PrismaClient({
         //@ts-ignore

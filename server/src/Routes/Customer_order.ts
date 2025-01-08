@@ -4,49 +4,39 @@ import { withAccelerate } from '@prisma/extension-accelerate'
 
 export const customer_order_router = new Hono();
 
-
-
-customer_order_router.post('/:id', async (c) => {
+// everything done
+customer_order_router.post('/', async (c) => {
     const prisma = new PrismaClient({
         //@ts-ignore
         datasourceUrl: c.env?.DATABASE_URL,
     }).$extends(withAccelerate());
     try {
-        const {
-            name,
-            lastname,
-            phone,
-            email,
-            company,
-            address,
-            apartment,
-            postalCode,
-            status,
-            city,
-            country,
-            orderNotice,
-            total,
-        } = await c.req.json();
+        const body = await c.req.json();
         const customerorder = await prisma.customer_order.create({
             data: {
-                name,
-                lastname,
-                phone,
-                email,
-                company,
-                address,
-                apartment,
-                postalCode,
-                status,
-                city,
-                country,
-                orderNotice,
-                total,
+                name : body.name,
+                lastname :body.lastname,
+                phone :body.phone,
+                email :body.email,
+                company :body.company,
+                address :body.address,
+                apartment :body.apartment,
+                postalCode :body.postalCode,
+                status :body.status,
+                city :body.city,
+                country :body.country,
+                orderNotice :body.orderNotice,
+                total :body.total,
             },
         });
+        if (!customerorder) {
+            return c.json({msg : "error placeing customer order"} ,{status:500});
+        }
         if (customerorder) {
-            c.status(201);
-            c.json(customerorder);
+            return c.json({
+                customerorder:customerorder ,
+                msg : "order placed successfully",
+            },{status: 201});
         }
     } catch (error) {
         console.error("Error creating the customer order:", error);
@@ -64,22 +54,7 @@ customer_order_router.put('/:id', async (c) => {
     try {
 
         const id = c.req.param('id');
-        const {
-            name,
-            lastname,
-            phone,
-            email,
-            company,
-            address,
-            apartment,
-            postalCode,
-            dateTime,
-            status,
-            city,
-            country,
-            orderNotice,
-            total,
-        } = await c.req.json();
+        const body = await c.req.json();
 
         const existingOrder = await prisma.customer_order.findUnique({
             where: {
@@ -88,8 +63,7 @@ customer_order_router.put('/:id', async (c) => {
         });
 
         if (!existingOrder) {
-            c.status(404);
-            return c.json({ error: "Order not found" })
+            return c.json({ error: "Order not found" },{status :404})
         }
 
         const updatedOrder = await prisma.customer_order.update({
@@ -97,22 +71,26 @@ customer_order_router.put('/:id', async (c) => {
                 id: existingOrder.id,
             },
             data: {
-                name,
-                lastname,
-                phone,
-                email,
-                company,
-                address,
-                apartment,
-                postalCode,
-                dateTime,
-                status,
-                city,
-                country,
-                orderNotice,
-                total,
+                name : body.name,
+                lastname :body.lastname,
+                phone :body.phone,
+                email :body.email,
+                company :body.company,
+                address :body.address,
+                apartment :body.apartment,
+                postalCode :body.postalCode,
+                status :body.status,
+                city :body.city,
+                country :body.country,
+                orderNotice :body.orderNotice,
+                total :body.total,
             },
         });
+        if (!updatedOrder) {
+            return c.json( {updatedOrder :updatedOrder ,
+                msg : "order data updated", 
+            },{status : 200})
+        }
 
         if (updatedOrder) {
             c.status(200);
@@ -133,12 +111,12 @@ customer_order_router.delete('/:id', async (c) => {
     }).$extends(withAccelerate());
     try {
         const id = c.req.param('id');
-        await prisma.customer_order.delete({
+        await prisma.customer_order.deleteMany({
             where: {
                 id: id,
             },
         });
-        return c.status(204);
+        return c.json({msg : "order deleted"} ,{status :200});
 
     } catch (error) {
         console.error("Error deleting order", error);

@@ -5,7 +5,7 @@ import { withAccelerate } from '@prisma/extension-accelerate'
 export const customer_orderproduct_router = new Hono();
 
 
-
+//done last route pending 
 customer_orderproduct_router.post('/', async (c) => {
     const prisma = new PrismaClient({
         //@ts-ignore
@@ -46,7 +46,7 @@ customer_orderproduct_router.put('/:id', async (c) => {
             data: { customerOrderId, productId, quantity }
         });
 
-        return c.json(updatedOrder);
+        return c.json({updatedOrder :updatedOrder , msg : "updated product details"} ,{status : 200});
     } catch (error) {
         console.error("Error updating order:", error);
         return c.json({ error: "Error updating order" }, 500);
@@ -61,10 +61,13 @@ customer_orderproduct_router.delete('/:id', async (c) => {
     }).$extends(withAccelerate());
     try {
         const { id } = c.req.param();
-        await prisma.customer_order_product.deleteMany({
-            where: { customerOrderId: id }
+        const deletedproduct = await prisma.customer_order_product.deleteMany({
+            where: { customerOrderId : id }
         });
-        return c.text("", 204);
+        if(!deletedproduct){
+            return c.json( {msg :"error deleted the order"},500);
+        }
+        return c.json( {msg :"deleted the order"},200);
     } catch (error) {
         console.error("Error deleting product orders:", error);
         return c.json({ error: "Error deleting product orders" }, 500);

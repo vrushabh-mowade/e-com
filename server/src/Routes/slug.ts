@@ -5,7 +5,7 @@ import { withAccelerate } from '@prisma/extension-accelerate'
 export const slugrouter = new Hono();
 
 
-
+//need to work on this
 slugrouter.get('/:id', async (c) => {
     const prisma = new PrismaClient({
         //@ts-ignore

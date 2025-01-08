@@ -1,8 +1,12 @@
+import Bag from "../Components/Bag";
+import { ChangingImagecomponent  } from "../Components/ChangingImagecomponent ";
+
+
 
 
 const Testpage = () => {
     return <>
-    <div>hii there iam vrushabh and this is test page</div>
+    <Bag/>
     </>
 
 }

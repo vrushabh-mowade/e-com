@@ -40,11 +40,8 @@ userrouter.post('/signup', async (c) => {
         const token = await sign({ id: user.id }, c.env.JWT_SECRET);
         console.log("token is ",token);//prod-check
 
-        return c.json({
-            token: token
-        })
+        return c.json(token)
     } catch (error) {
-        ;
         console.log("error in the signup", error);
         return c.json({
             msg: "sign up error"
@@ -74,9 +71,7 @@ userrouter.post('/signin', async (c) => {
         }
 
         const token = await sign({id:user?.id},c.env.JWT_SECRET);
-        return c.json({
-            token : token
-        })
+        return c.json(token)
 
     } catch (error) {
         console.log("sign in error is ", error);

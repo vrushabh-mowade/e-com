@@ -10,6 +10,7 @@ categoryrouter.onError((err, c) => {
     return c.text('the main category route error', 500)
 })
 
+//done
 categoryrouter.post('/', async (c) => {
     const prisma = new PrismaClient({
         //@ts-ignore

@@ -1,21 +1,33 @@
 import Appbar from "../Components/Appbar";
-import Productcard from "../Components/Productcard";
+import BreadcumSection from "../Components/BreadcumSection";
+import CategoryFilter from "../Components/CategoryFilter";
+import { ProductCard } from "../Components/Productcard";
+import Topproductbar from "../Components/Topproductbar";
+import { useProduct } from "../hooks/products";
+
 
 const Homepage = () => {
+    const { products } = useProduct();
     return <>
         <Appbar />
-        <div id="section"></div>
-        <div className="flex flex-row w-full">
-            <div id="filter-section" className="w-96  bg-yellow-500"> 1</div>
-            <div id="product-section" className="w-1100 ">
-                <Productcard/>
-                <Productcard/>
-                <Productcard/>
-                <Productcard/>
-                <Productcard/>
-                <Productcard/>          
+        <BreadcumSection/>
+        <div className="grid grid-flow-col auto-cols-max flex flex-row w-full justify-center">
+            <div id="filter-section" className="flex flex-col items-center w-[234px] m-5 ">
+                <CategoryFilter />
             </div>
-            <div id="empty-section" className="w-96 bg-yellow-500">3</div>
+            <div>
+                <Topproductbar />
+                <div id="product-section" className="w-952 grid grid-cols-3">
+                    {products.map((product) => (<ProductCard
+                        id={product.id}
+                        key={product.id}
+                        title={product.title}
+                        mainImage={product.mainImage}
+                        price={product.price}
+                        manufacturer={product.manufacturer}
+                    />))}
+                </div>
+            </div>
         </div>
     </>
 

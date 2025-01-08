@@ -8,9 +8,16 @@ import { customer_order_router  } from './Customer_order' ;
 import { customer_orderproduct_router } from './Customer_orderproduct';
 import { slugrouter } from './slug';
 import { searchrouter } from './Search';
+import { cartrouter } from './Cart';
+import { cartitemsrouter } from './CartItems';
 
 
 export const Mainrouter = new Hono();
+
+Mainrouter.onError((err, c) => {
+    console.error(`${err}`)
+    return c.text('the mainrouter route error', 500)
+})
 
 
 Mainrouter.route('/user' ,userrouter);
@@ -22,3 +29,5 @@ Mainrouter.route('/wishlist',wishlistrouter);
 Mainrouter.route('/search',searchrouter);
 Mainrouter.route('/customerorder',customer_order_router);
 Mainrouter.route('/customerorderproduct',customer_orderproduct_router);
+Mainrouter.route('/cart',cartrouter);
+Mainrouter.route('/cartitems',cartitemsrouter);

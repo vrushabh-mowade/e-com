@@ -1,4 +1,5 @@
 import { Hono } from 'hono';
+import { verify } from 'hono/jwt';
 import { Prisma, PrismaClient } from '@prisma/client/edge'
 import { withAccelerate } from '@prisma/extension-accelerate'
 
@@ -9,6 +10,71 @@ type Bindings = {
 }
 
 export const productsrouter = new Hono<{ Bindings: Bindings }>();
+
+
+
+productsrouter.use('/*', async (c, next) => {
+
+    const prisma = new PrismaClient({
+        //@ts-ignore
+        datasourceUrl: c.env?.DATABASE_URL,
+    }).$extends(withAccelerate());
+    const authheader = c.req.header("Authorization");
+    const token = authheader?.split(" ")[1]; 
+    try {
+        const user = await verify(token || "", c.env.JWT_SECRET);
+        if (user) {
+            //@ts-ignore
+            c.set("userId", user.id);
+            await next()
+        } else {
+            c.status(411);
+            return c.json({
+                "error": "authorization error "
+            })
+        }
+    } catch (e) {
+        c.status(403);
+        return c.json({
+            "error": "you are not logged in  "
+        })
+    }
+})
+
+//get all product remaininng
+// Get all products
+productsrouter.get('/', async (c) => {
+    const prisma = new PrismaClient({
+        //@ts-ignore
+        datasourceUrl: c.env?.DATABASE_URL,
+    }).$extends(withAccelerate());
+    try {
+        console.log("hii1");
+        // const mode = await c.req.query('mode') || "";
+        console.log("hii2");
+        // console.log(mode);
+        // if(!mode){
+            try {
+                console.log("hii3");
+                const products = await prisma.product.findMany({});
+                return c.json({products},{status :200})
+            } catch (error) {
+            return c.json({msg: "error fetching all  the product",
+            error: error},{status :404})
+            }
+        // }else{
+            return c.json({msg: "query parameter 'mode' not got"})
+                // }
+
+    } catch (error) {
+        c.status(404)
+        return c.json({
+            msg: "error fetching all  the product",
+            error: error
+        })
+    }
+}); 
+
 
 // Uploading product image and data
 productsrouter.post('/', async (c) => {
@@ -151,37 +217,6 @@ productsrouter.delete('/:id', async (c) => {
 
 });
 
-// Get all products
-productsrouter.get('/', async (c) => {
-    const prisma = new PrismaClient({
-        //@ts-ignore
-        datasourceUrl: c.env?.DATABASE_URL,
-    }).$extends(withAccelerate());
-    try {
-        const mode = c.req.query || "";
-        if(!mode){
-            try {
-            
-            } catch (error) {
-                
-            }
-        }else{
-            
-
-        }
-         
-     
-
-    } catch (error) {
-        c.status(404)
-        return c.json({
-            msg: "error fetching all  the product",
-            error: error
-        })
-
-    }
-
-}); 
 
 
 

@@ -23,6 +23,8 @@ export const ProductCard = ({
         navigate(`/product/${id}`);
     };
 
+    
+
     // const handleQuickview = () => {
     //     navigate("/test");
     // };
@@ -65,6 +67,7 @@ export const ProductCard = ({
                     </div>
                 </div>
             </div>
+            
         </div>
         
     );

@@ -32,6 +32,8 @@ export const useProduct = () => {
 };
 
 
+
+
 export const useGetProductdetails = (id: string): { details: ProductResponse | null, loading: boolean, error: Error | null } => {
     const [details, setDetails] = useState<ProductResponse | null>(null);
     const [error, setError] = useState<Error | null>(null); 
@@ -60,12 +62,17 @@ export const useGetProductdetails = (id: string): { details: ProductResponse | n
       }
     }, [id]);
 
-    return { details, loading, error }; 
+    return { details, loading, error}; 
   };
 
-  interface ImageResponse {
-    images: string[];
-  }
+
+
+
+
+
+interface ImageResponse {
+  images: string[];
+}
 
 export const useGetProductImages = (id: string) => {
   const [imageData, setimageData] = useState<ImageResponse |null>(null); // Type the state as an array of images

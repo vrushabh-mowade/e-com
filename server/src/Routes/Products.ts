@@ -172,7 +172,6 @@ productsrouter.get('/:id', async (c) => {
                 id: id
             }
         });
-
         return c.json({
             product: product,
             msg: "product fetched successfully"
@@ -183,9 +182,35 @@ productsrouter.get('/:id', async (c) => {
             msg: "error getting the product",
             error: error
         })
-
     }
 });
+
+
+//for getting the main image using the productid 
+productsrouter.get('/mainimage/:id', async (c) => {
+    const prisma = new PrismaClient({
+        //@ts-ignore
+        datasourceUrl: c.env?.DATABASE_URL,
+    }).$extends(withAccelerate());
+    try {
+        const id = c.req.param('id');
+        const product = await prisma.product.findUnique({
+            where: {
+                id: id
+            }
+        });
+        return c.json({
+            mainImage : product?.mainImage,
+        })
+    } catch (error) {
+        c.status(404)
+        return c.json({
+            msg: "error getting the product",
+            error: error
+        })
+    }
+});
+
 
 // Deleting a product
 productsrouter.delete('/:id', async (c) => {

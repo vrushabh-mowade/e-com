@@ -1,8 +1,10 @@
 import ImageComponent from "../Components/ImageComponent";
 import DetailedProductInfo from "../Components/DetailedProductInfo";
-import { useParams } from "react-router";
+import { useNavigate, useParams } from "react-router";
 import { useGetProductdetails, useGetProductImages } from "../hooks/products";
 import { useState, useEffect } from "react";
+
+
 
 export interface Product {
   id: string;
@@ -27,6 +29,7 @@ const ProductPage = () => {
   const [productDetails, setProductDetails] = useState<Product| null>(null);
   const [Imagearray, setImagearray] = useState<string[] | null>(null);
 
+  const navigate = useNavigate();
   useEffect(() => {
     if (details) {
       setProductDetails(details?.product);
@@ -52,6 +55,11 @@ const ProductPage = () => {
     return <div>Loading...</div>;
   }
 
+  const Cartcomponent = () => {
+    console.log("Navigating to product:", id);
+    navigate(`/test/${id}`);
+};
+
   console.log("the image array is",Imagearray );
   console.log("the image array from product page is",Imagearray[4]);
   return (
@@ -71,6 +79,9 @@ const ProductPage = () => {
             </div>
           </div>
         </div>
+        <button onClick={Cartcomponent}>
+                show cart
+            </button>
       </div>
     </>
   );

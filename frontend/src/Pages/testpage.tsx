@@ -1,14 +1,11 @@
-import Bag from "../Components/Bag";
-import { ChangingImagecomponent  } from "../Components/ChangingImagecomponent ";
+import {Cart} from "../Components/Cart";
 
 
-
-
-const Testpage = () => {
+export const Testpage = () => {
     return <>
-    <Bag/>
+    <Cart/>
     </>
 
 }
 
-export default Testpage;
+

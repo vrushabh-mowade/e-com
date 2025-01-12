@@ -11,8 +11,8 @@ interface CartApiResponse {
 interface CartItem {
     id: string;
     userId: string;
-    createdAt: string; // ISO date string
-    updatedAt: string; // ISO date string
+    createdAt: string; 
+    updatedAt: string;
     items: Item[];
 }
 

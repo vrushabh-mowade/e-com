@@ -7,6 +7,7 @@ import NotFound from './Components/NotFound';
 import { Signup } from './Pages/Signup';
 import { Signin } from './Pages/Signin';
 import CartPage from './Pages/CartPage';
+import ShippingPage from './Pages/ShippingPage';
 
 function App() {
   return (
@@ -20,6 +21,7 @@ function App() {
           <Route path='/componentcheck' element={<ComponentCheck/>}/>
           <Route path='/product/:id' element={<ProductPage/>}/>
           <Route path='/cart' element={<CartPage/>}/>
+          <Route path='/shipping' element={<ShippingPage/>}/>
           <Route path="*" element={<NotFound/>} />
         </Routes>
       </BrowserRouter>

@@ -49,6 +49,42 @@ allcartoptionrouter.get('/:userId', async (c) => {
 });
 
 
+// to get all the cartitems using customerorderId
+allcartoptionrouter.get('/cartItem/:cartId', async (c) => {
+    const prisma = new PrismaClient({
+         //@ts-ignore
+        datasourceUrl: c.env?.DATABASE_URL,
+    }).$extends(withAccelerate());
+
+    try {
+        const cartId = c.req.param('cartId');
+
+        if (!cartId) {
+            return c.json({
+                msg: "cartId is required",
+            }, 400);
+        }
+
+        const cartItems = await prisma.cartItem.findMany({
+            where: {
+                cartId : cartId
+            }
+        });
+
+        return c.json({
+            msg: "Cart items fetched successfully for uplading to  the customer ordered product ",
+            cartItems,
+        });
+    } catch (error : any) {
+        console.error("Error fetching cart items: ", error);
+        return c.json({
+            msg: "Error fetching cart items",
+            error: error.message || error,
+        }, 500);
+    } 
+});
+
+
 
 
 // delete all the cart items using usrid
@@ -211,4 +247,126 @@ allcartoptionrouter.put('/:cartitemId', async (c) => {
 
     }
 });
+
+
+
+
+//  get the cartiem and add its data to the customerordered product.
+allcartoptionrouter.post('/cartItemtoorderproduct', async (c) => {
+    const prisma = new PrismaClient({
+        //@ts-ignore
+        datasourceUrl: c.env?.DATABASE_URL,
+    }).$extends(withAccelerate());
+
+    try {
+        const body = await c.req.json();
+
+        if (!body?.cartId || !body?.customerorderId) {
+            return c.json(
+                {
+                    msg: "cartId and customerorderId are required",
+                },
+                400
+            );
+        }
+
+        // Fetch cart items
+        const cartitemsData = await prisma.cartItem.findMany({
+            where: {
+                cartId: body.cartId,
+            },
+        });
+
+        if (cartitemsData.length === 0) {
+            return c.json({
+                msg: "No items found for the provided cartId",
+            });
+        }
+
+        // Create customer order products
+        const results = await Promise.allSettled(
+            cartitemsData.map((item) =>
+                prisma.customer_order_product.create({
+                    data: {
+                        customerOrderId: body.customerorderId,
+                        quantity: item.quantity,
+                        productId: item.productId,
+                    },
+                })
+            )
+        );
+
+        // Process results
+        const successful = results.filter((result) => result.status === "fulfilled").length;
+        const failed = results.filter((result) => result.status === "rejected");
+
+        if (failed.length > 0) {
+            console.error("Failed operations:", failed);
+        }
+
+        return c.json({
+            msg: `${successful} items uploaded successfully. ${failed.length} failed.`,
+            cartitemsData,
+        });
+    } catch (error: any) {
+        console.error("Error processing cart items:", error);
+        return c.json(
+            {
+                msg: "Error processing cart items",
+                error: error.message || error,
+            },
+            500
+        );
+    }
+});
+
+
+// allcartoptionrouter.post('/cartItemtoorderproduct', async (c) => {
+//     const prisma = new PrismaClient({
+//          //@ts-ignore
+//         datasourceUrl: c.env?.DATABASE_URL,
+//     }).$extends(withAccelerate());
+
+//     try {
+//         const body = await c.req.json();
+
+//         if (!body) {
+//             return c.json({
+//                 msg: "body is required",
+//             }, 400);
+//         }
+//         const cartitemsData = await prisma.cartItem.findMany({
+//             where:{
+//                 cartId : body.cartId,
+//             }
+//         });
+
+//         cartitemsData.forEach(async (item) =>{
+//             await prisma.customer_order_product.create({
+//                 data:{
+//                     customerOrderId :body.customerorderId,
+//                     quantity : item.quantity,
+//                     productId : item.productId
+//                 }
+//             });
+//         });
+
+//         return c.json({
+//             msg: "Cart items fetched successfully for uplading to  the customer ordered product ",
+//             cartitemsData,        
+//         });
+//     } catch (error : any) {
+//         console.error("Error fetching cart items: ", error);
+//         return c.json({
+//             msg: "Error fetching cart items",
+//             error: error.message || error,
+//         }, 500);
+//     } 
+// });
+
+
+
+
+
+
 

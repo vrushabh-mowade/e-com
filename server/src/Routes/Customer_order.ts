@@ -46,6 +46,9 @@ customer_order_router.post('/', async (c) => {
 })
 
 
+
+
+
 customer_order_router.put('/:id', async (c) => {
     const prisma = new PrismaClient({
         //@ts-ignore
@@ -153,6 +156,8 @@ customer_order_router.get('/:id', async (c) => {
         return c.json({ error: "error while finding the prodect" })
     }
 });
+
+
 
 
 

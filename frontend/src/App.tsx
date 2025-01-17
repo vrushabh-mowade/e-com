@@ -8,6 +8,7 @@ import { Signup } from './Pages/Signup';
 import { Signin } from './Pages/Signin';
 import CartPage from './Pages/CartPage';
 import ShippingPage from './Pages/ShippingPage';
+import PaymentPage from './Pages/PaymentPage';
 
 function App() {
   return (
@@ -17,11 +18,14 @@ function App() {
           <Route path='/' element={<Homepage/>}/>
           <Route path="/signup" element={<Signup/>} />
           <Route path="/signin" element={<Signin/>} />
-          <Route path='/test/:userId' element={<Testpage/>}/>
-          <Route path='/componentcheck' element={<ComponentCheck/>}/>
           <Route path='/product/:id' element={<ProductPage/>}/>
-          <Route path='/cart' element={<CartPage/>}/>
+          <Route path='/cart/:userId' element={<CartPage/>}/>
           <Route path='/shipping' element={<ShippingPage/>}/>
+          <Route path='/checkout' element={<PaymentPage/>}/>
+          
+          <Route path='/test' element={<Testpage/>}/>
+          {/* <Route path='/test/:userId' element={<CartPage/>}/> */}
+          <Route path='/componentcheck' element={<ComponentCheck/>}/>
           <Route path="*" element={<NotFound/>} />
         </Routes>
       </BrowserRouter>

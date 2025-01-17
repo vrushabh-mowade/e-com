@@ -87,7 +87,7 @@ allcartoptionrouter.get('/cartItem/:cartId', async (c) => {
 
 
 
-// delete all the cart items using usrid
+// delete all the cart items using userid
 allcartoptionrouter.delete('/clear/:userId', async (c) => {
     const prisma = new PrismaClient({
         //@ts-ignore
@@ -130,15 +130,12 @@ allcartoptionrouter.post('/', async (c) => {
                 error: "productId and cartId are required."
             }, 400); 
         }
-
-    
-        const quantity = typeof body.quantity === 'number' ? body.quantity : 1;        
 //Here add code if someone added the same product then one should noly exists and the questity should get increased 
         const cartItem = await prisma.cartItem.create({
             data: {
                 productId: body.productId,
                 cartId: body.cartId,
-                quantity,
+                quantity: body.quantity,
             },
         });
 
@@ -153,7 +150,7 @@ allcartoptionrouter.post('/', async (c) => {
         return c.json({
             msg: "Error creating CartItem",
             error: error.message || error,
-        }, 500); // Send a 500 Internal Server Error response
+        }, 500); 
     } 
 });
 
@@ -321,52 +318,68 @@ allcartoptionrouter.post('/cartItemtoorderproduct', async (c) => {
 });
 
 
-// allcartoptionrouter.post('/cartItemtoorderproduct', async (c) => {
-//     const prisma = new PrismaClient({
-//          //@ts-ignore
-//         datasourceUrl: c.env?.DATABASE_URL,
-//     }).$extends(withAccelerate());
-
-//     try {
-//         const body = await c.req.json();
-
-//         if (!body) {
-//             return c.json({
-//                 msg: "body is required",
-//             }, 400);
-//         }
-//         const cartitemsData = await prisma.cartItem.findMany({
-//             where:{
-//                 cartId : body.cartId,
-//             }
-//         });
-
-//         cartitemsData.forEach(async (item) =>{
-//             await prisma.customer_order_product.create({
-//                 data:{
-//                     customerOrderId :body.customerorderId,
-//                     quantity : item.quantity,
-//                     productId : item.productId
-//                 }
-//             });
-//         });
-
-//         return c.json({
-//             msg: "Cart items fetched successfully for uplading to  the customer ordered product ",
-//             cartitemsData,        
-//         });
-//     } catch (error : any) {
-//         console.error("Error fetching cart items: ", error);
-//         return c.json({
-//             msg: "Error fetching cart items",
-//             error: error.message || error,
-//         }, 500);
-//     } 
-// });
 
 
+//get the status weather a product is in the cart or not for toggle the cart btn
 
+allcartoptionrouter.post('/check/:userId', async (c) => {
+    const prisma = new PrismaClient({
+        //@ts-ignore
+        datasourceUrl: c.env?.DATABASE_URL,
+    }).$extends(withAccelerate());
 
+    try {
+        const userId = c.req.param('userId');
+        console.log("USER ID:", userId);
 
+        const { productId } = await c.req.json(); // Extract productId from the request body
+
+        if (!userId) {
+            return c.json({
+                msg: "User ID is required.",
+                isincart: false,
+            }, 400);
+        }
+
+        if (!productId) {
+            return c.json({
+                msg: "Product ID is required.",
+                isincart: false,
+            }, 400);
+        }
+
+        const cart = await prisma.cart.findUnique({
+            where: { userId },
+            include: {
+                items: true, // Ensure the `items` relation is included
+            },
+        });
+
+        if (!cart || !cart.items) {
+            return c.json({
+                isincart: false,
+                msg: "No cart or items found for this user.",
+
+            });
+        }
+
+        // Check if the product exists in the cart's items
+        const cartItemExists = cart.items.some(item => item.productId === productId);
+
+        return c.json({
+            cartId : cart.id,
+            isincart: cartItemExists,
+            msg: cartItemExists
+                ? "Product is in the cart."
+                : "Product is not in the cart.",
+        });
+    } catch (error: any) {
+        console.error("Error fetching cart items:", error);
+        return c.json({
+            msg: "An error occurred while fetching cart items.",
+            error: error.message || error,
+        }, 500);
+    }
+});
 
 

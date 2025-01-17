@@ -1,9 +1,9 @@
-import {Cart} from "../Components/Cart";
+import { ShippingAddressForm } from "../Components/ShippingAddressForm";
 
 
 export const Testpage = () => {
     return <>
-    <Cart/>
+    <ShippingAddressForm/>
     </>
 
 }

@@ -11,15 +11,18 @@ type Bindings = {
 export const searchrouter = new Hono<{ Bindings: Bindings }>();
 
 
-//need to work on this
-searchrouter.get('/',async (c)=>{
+//works well on
+searchrouter.get('/get/',async (c)=>{
     const prisma = new PrismaClient({
         //@ts-ignore
         datasourceUrl: c.env?.DATABASE_URL,
     }).$extends(withAccelerate());
+    console.log("1");
 
     try {
+        console.log("2");
         const { query } = c.req.query();
+        console.log(query);
         if (!query) {
             c.status(400);
             return c.json({ error: "Query parameter is required" })
@@ -37,11 +40,19 @@ searchrouter.get('/',async (c)=>{
                         description: {
                             contains: query
                         }
+                    },
+                    {
+                        slug:{
+                            contains : query
+                        }
+                    },
+                    {
+                        manufacturer : query
                     }
                 ]
             }
         });
-
+        
         return c.json(products);
     } catch (error) {
         console.error("Error searching products:", error);
@@ -50,8 +61,3 @@ searchrouter.get('/',async (c)=>{
     }
 
 })
-
-// async function searchProducts(c:any) {
-
-// }
-

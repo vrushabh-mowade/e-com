@@ -2,6 +2,8 @@ import { Link } from "react-router";
 import { useGetcartitems } from "../hooks/Cart";
 import { CartItem } from "./CartItem";
 import { jwtDecode } from "jwt-decode";
+import { useCallback } from "react";
+
 
 export const Cart = () => {
   const wholeToken = localStorage.getItem("token");
@@ -12,8 +14,19 @@ export const Cart = () => {
   }
   const decoded = jwtDecode<{ id: string }>(token);
   const userId = decoded.id;
+  localStorage.setItem("userId", userId);
 
   const { cartData, loading, error } = useGetcartitems(userId || "");
+  
+  const refreshCartData = useCallback(async () => {
+    try {
+      const { cartData: refreshedData } = await useGetcartitems(userId);
+      setCartData(refreshedData);
+    } catch (err) {
+      console.error("Error refreshing cart data:", err);
+    }
+  }, [userId]);
+  
 
   if (!loading) {
     return (
@@ -35,7 +48,7 @@ export const Cart = () => {
         `product id ${item.productId} has main image as  `,
         item.product.mainImage
       );
-      total = total + parseInt(item.product.price);
+      total = total + parseInt(item.product.price)*(item.quantity);
     });
   });
 
@@ -44,15 +57,18 @@ export const Cart = () => {
   return (
     <div className="flex justify-center">
       <div className="grid grid-flow-col auto-cols-max">
-        <div className="flex flex-col items-center">
+        <div  className="flex flex-col items-center">
           {cartData?.cartItems.map((cartItem) => (
             <div key={cartItem.id} className="mb-5">
               {cartItem.items.map((item) => (
                 <CartItem
+                  key={item.productId}
                   manufacturer={item.product.manufacturer}
                   title={item.product.title}
                   mainImage={item.product.mainImage}
                   price={item.product.price}
+                  cartItemId={item.id}
+                  onDelete={() => useGetcartitems(userId)}
                 />
               ))}
             </div>

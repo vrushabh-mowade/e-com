@@ -8,6 +8,8 @@ import { useProduct } from "../hooks/products";
 
 const Homepage = () => {
     const { products } = useProduct();
+
+
     return <>
         <Appbar />
         <BreadcumSection/>

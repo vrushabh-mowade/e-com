@@ -107,26 +107,6 @@ customer_order_router.put('/:id', async (c) => {
 })
 
 
-customer_order_router.delete('/:id', async (c) => {
-    const prisma = new PrismaClient({
-        //@ts-ignore
-        datasourceUrl: c.env?.DATABASE_URL,
-    }).$extends(withAccelerate());
-    try {
-        const id = c.req.param('id');
-        await prisma.customer_order.deleteMany({
-            where: {
-                id: id,
-            },
-        });
-        return c.json({msg : "order deleted"} ,{status :200});
-
-    } catch (error) {
-        console.error("Error deleting order", error);
-        c.status(404);
-        return c.json({ error: "Error deleteing the customer order" })
-    }
-});
 
 customer_order_router.get('/:id', async (c) => {
     const prisma = new PrismaClient({
@@ -183,6 +163,49 @@ customer_order_router.get('/', async (c) => {
 
 
 
+customer_order_router.delete('/deleteall', async (c) => {
+    const prisma = new PrismaClient({
+        //@ts-ignore
+        datasourceUrl: c.env?.DATABASE_URL,
+    }).$extends(withAccelerate());
+    try {
+        await prisma.customer_order_product.deleteMany();
+        const result = await prisma.customer_order.deleteMany();
+
+        if (result.count === 0) {
+            // No orders matched the condition
+            return c.json({ msg: "No orders found to delete" }, { status: 404 });
+        }
+
+        // Some orders were deleted
+        return c.json({ msg: `Deleted ${result.count} orders` }, { status: 200 });
+
+    } catch (error) {
+        console.error("Error deleting orders:", error);
+        return c.json({ error: "Error deleting customer orders" }, { status: 500 });
+    }
+});
 
 
 
+
+customer_order_router.delete('/:id', async (c) => {
+    const prisma = new PrismaClient({
+        //@ts-ignore
+        datasourceUrl: c.env?.DATABASE_URL,
+    }).$extends(withAccelerate());
+    try {
+        const id = c.req.param('id');
+        await prisma.customer_order.deleteMany({
+            where: {
+                id: id,
+            },
+        });
+        return c.json({msg : "order deleted"} ,{status :200});
+
+    } catch (error) {
+        console.error("Error deleting order", error);
+        c.status(404);
+        return c.json({ error: "Error deleteing the customer order" })
+    }
+});

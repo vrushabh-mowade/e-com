@@ -1,6 +1,17 @@
+import { useDeltecartItem } from "../hooks/Cart";
 
 
-const Rightsidebar = ({price} : {price :string} ) => {
+const Rightsidebar = ({price ,cartItemId ,onDelete } : {price :string ,cartItemId :string ,onDelete : ()=>(void)} ) => {
+  const { DeleteCartitem , loading, error } = useDeltecartItem(onDelete);
+
+  const DeleteItem = async () =>{
+    try {
+      await DeleteCartitem(cartItemId);
+    } catch (err) {
+      console.error("Error deleting the cartitem:", err);
+    }
+    
+  }
 return (
     
     <div className="flex flex-col p-4 text-right justify-between">
@@ -23,7 +34,7 @@ return (
 
 
         <div className="flex gap-6">
-          <div className="font-medium text-sm text-sky-900"> Delete</div>
+          <button onClick={DeleteItem}> <div className="font-medium text-sm text-sky-900"> Delete </div></button>
           <div className=" flex items-center justify-center font-medium text-sm text-sky-900 ">
             <svg
               xmlns="http://www.w3.org/2000/svg"

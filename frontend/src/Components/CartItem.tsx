@@ -1,3 +1,4 @@
+
 import Rightsidebar from "../SubComponent/Rightsidebar";
 
 export interface CartProps {
@@ -5,15 +6,21 @@ export interface CartProps {
   mainImage: string;
   price: string;
   manufacturer: string;
+  cartItemId :string,
+  onDelete : ()=>(void)
 }
 
 export const CartItem = ({
   manufacturer , 
   title ,
   mainImage ,
-  price
+  price,
+  cartItemId,
+  onDelete 
 
 } : CartProps) => {
+
+
   return (
     <div className="w-[883px] h-40  shadow-md flex justify-between">
       <div className="flex">
@@ -30,7 +37,7 @@ export const CartItem = ({
           <div className="text-sm ">{title}</div>
         </div>
       </div>
-      <Rightsidebar price={price} />
+      <Rightsidebar price={price} cartItemId={cartItemId} onDelete={onDelete}/>
     </div>
   );
 };

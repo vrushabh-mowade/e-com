@@ -5,7 +5,8 @@
 
 const Topproductbar = () => {
     return (<>
-    <div className="flex justify-center items-center p-10 font-serif text-slate-800 text-4xl  antialiased ">Shoes
+    <div className="flex justify-center items-center p-10 font-serif text-slate-800 text-4xl  antialiased ">
+        Shoes
     </div>
     <div className="pb-5">
     <hr className="border-t border-gray-300 my-0.5" />

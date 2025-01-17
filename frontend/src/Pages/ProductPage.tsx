@@ -25,11 +25,12 @@ const ProductPage = () => {
   const { id } = useParams();
   const { details } = useGetProductdetails(id || "");
   const { imageData } = useGetProductImages(id || "");
-
+  
   const [productDetails, setProductDetails] = useState<Product| null>(null);
   const [Imagearray, setImagearray] = useState<string[] | null>(null);
-
+  
   const navigate = useNavigate();
+  
   useEffect(() => {
     if (details) {
       setProductDetails(details?.product);
@@ -57,7 +58,7 @@ const ProductPage = () => {
 
   const Cartcomponent = () => {
     console.log("Navigating to product:", id);
-    navigate(`/test/${id}`);
+    navigate(`/cart/${id}`);
 };
 
   console.log("the image array is",Imagearray );
@@ -80,8 +81,8 @@ const ProductPage = () => {
           </div>
         </div>
         <button onClick={Cartcomponent}>
-                show cart
-            </button>
+              Go to Bag
+        </button>
       </div>
     </>
   );

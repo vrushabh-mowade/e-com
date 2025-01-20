@@ -9,21 +9,32 @@ export interface CartApiResponse {
     cartItems: CartItem[];
 }
 
+// interface CartItem {
+//     id: string;
+//     userId: string;
+//     createdAt: string; 
+//     updatedAt: string;
+//     items: Item[];
+// }
+
+// interface Item {
+//     id: string;
+//     cartId: string;
+//     productId: string;
+//     quantity: number;
+//     product: ProductProps;
+// }
+
+
 interface CartItem {
     id: string;
-    userId: string;
-    createdAt: string; 
-    updatedAt: string;
-    items: Item[];
+    cartId: string; 
+    productId: string;
+    quantity: number; 
+    product: ProductProps; 
 }
 
-interface Item {
-    id: string;
-    cartId: string;
-    productId: string;
-    quantity: number;
-    product: ProductProps;
-}
+
 
 //get the cart items here using userid and return the whole data
 export const useGetcartitems = (userId :string) :{cartData : CartApiResponse | null, loading: boolean, error: Error | null} =>{
@@ -63,7 +74,6 @@ export const usecartitemcheck = ( userId: string , productId: string): { isincar
     const [cartId, setcartId] = useState<string | null>(null);
     const [error, setError] = useState<Error | null>(null);
     const [loading, setLoading] = useState<boolean>(true);
-
     const fetchcartStatus = async () => {
         try {
             console.log("USER ID:", userId);
@@ -125,11 +135,8 @@ const uploadToCart = async (cartId : string | null, productId: string, quantity:
     } finally {
       setLoading(false);
     }
-  };
-
-  return { uploadToCart, loading, error };
-
-
+};
+return { uploadToCart, loading, error };
 };
 
 //used to delete the cart item using the cartid 

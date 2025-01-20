@@ -10,31 +10,71 @@ allcartoptionrouter.onError((err, c) => {
     return c.text('the main category route error', 500)
 });
 
+
+// allcartoptionrouter.get('/:userId', async (c) => {
+//     const prisma = new PrismaClient({
+//          //@ts-ignore
+//         datasourceUrl: c.env?.DATABASE_URL,
+//     }).$extends(withAccelerate());
+
+//     try {
+//         const userId = c.req.param('userId');
+
+//         if (!userId) {
+//             return c.json({
+//                 msg: "User ID is required",
+//             }, 400);
+//         }
+
+//         const cartItems = await prisma.cart.findMany({
+//             where: { userId },
+//             include: { items : {
+//                 include :{
+//                     product :true
+//                 }
+//             }}, // Include related CartItems
+//         });
+
+//         return c.json({
+//             msg: "Cart fetched successfully",
+//             cartItems,
+//         });
+//     } catch (error : any) {
+//         console.error("Error fetching cart items: ", error);
+//         return c.json({
+//             msg: "Error fetching cart items",
+//             error: error.message || error,
+//         }, 500);
+//     } 
+// });
+
 // to get all the cartitems using userid
 allcartoptionrouter.get('/:userId', async (c) => {
     const prisma = new PrismaClient({
          //@ts-ignore
         datasourceUrl: c.env?.DATABASE_URL,
     }).$extends(withAccelerate());
-
     try {
         const userId = c.req.param('userId');
-
         if (!userId) {
             return c.json({
                 msg: "User ID is required",
             }, 400);
         }
-
-        const cartItems = await prisma.cart.findMany({
-            where: { userId },
-            include: { items : {
-                include :{
-                    product :true
-                }
-            }}, // Include related CartItems
+        const cart = await prisma.cart.findMany({
+            where: { 
+                userId
+            }
         });
-
+        const cartId = cart[0].id;
+        const cartItems = await prisma.cartItem.findMany({
+            where :{ 
+                cartId : cartId
+            },
+            include :{
+                product :true
+            }
+        })
         return c.json({
             msg: "Cart items fetched successfully",
             cartItems,

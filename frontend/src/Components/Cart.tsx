@@ -2,7 +2,26 @@ import { Link } from "react-router";
 import { useGetcartitems } from "../hooks/Cart";
 import { CartItem } from "./CartItem";
 import { jwtDecode } from "jwt-decode";
-import { useCallback } from "react";
+import { useCallback, useState ,useEffect} from "react";
+
+type Product = {
+  manufacturer: string;
+  title: string;
+  mainImage: string;
+  price: string;
+};
+
+type CartItemDetails = {
+  productId: string;
+  product: Product;
+};
+
+type CartItemType = {
+  id: string;
+  items: CartItemDetails[];
+};
+
+type CartItemsState = Record<string, CartItemType>;
 
 
 export const Cart = () => {
@@ -17,15 +36,17 @@ export const Cart = () => {
   localStorage.setItem("userId", userId);
 
   const { cartData, loading, error } = useGetcartitems(userId || "");
-  
-  const refreshCartData = useCallback(async () => {
-    try {
-      const { cartData: refreshedData } = await useGetcartitems(userId);
-      setCartData(refreshedData);
-    } catch (err) {
-      console.error("Error refreshing cart data:", err);
-    }
-  }, [userId]);
+  const [cartItems, setCartItems] = useState<CartItemsState>({}); // State for individual cart items
+
+
+  // const refreshCartData = useCallback(async () => {
+  //   try {
+  //     const { cartData: refreshedData } = await useGetcartitems(userId);
+  //     setCartData(refreshedData);
+  //   } catch (err) {
+  //     console.error("Error refreshing cart data:", err);
+  //   }
+  // }, [userId]);
   
 
   if (!loading) {
@@ -41,16 +62,20 @@ export const Cart = () => {
   }
   let total = 0;
 
-  cartData?.cartItems.forEach((cartItem) => {
-    const items = cartItem.items;
-    items.forEach((item) => {
-      console.log(
-        `product id ${item.productId} has main image as  `,
-        item.product.mainImage
-      );
-      total = total + parseInt(item.product.price)*(item.quantity);
-    });
-  });
+  cartData?.cartItems.forEach((item)=>{
+    
+  })
+
+  // cartData?.cartItems.forEach((cartItem) => {
+  //   const items = cartItem.items;
+  //   items.forEach((item) => {
+  //     console.log(
+  //       `product id ${item.productId} has main image as  `,
+  //       item.product.mainImage
+  //     );
+  //     total = total + parseInt(item.product.price)*(item.quantity);
+  //   });
+  // });
 
   console.log(total);
 
@@ -58,7 +83,7 @@ export const Cart = () => {
     <div className="flex justify-center">
       <div className="grid grid-flow-col auto-cols-max">
         <div  className="flex flex-col items-center">
-          {cartData?.cartItems.map((cartItem) => (
+        {Object.values(cartItems).map((cartItem) => (
             <div key={cartItem.id} className="mb-5">
               {cartItem.items.map((item) => (
                 <CartItem
@@ -67,8 +92,7 @@ export const Cart = () => {
                   title={item.product.title}
                   mainImage={item.product.mainImage}
                   price={item.product.price}
-                  cartItemId={item.id}
-                  onDelete={() => useGetcartitems(userId)}
+                  cartItemId={cartItem.id}
                 />
               ))}
             </div>

@@ -1,8 +1,8 @@
 import { useDeltecartItem } from "../hooks/Cart";
 
 
-const Rightsidebar = ({price ,cartItemId ,onDelete } : {price :string ,cartItemId :string ,onDelete : ()=>(void)} ) => {
-  const { DeleteCartitem , loading, error } = useDeltecartItem(onDelete);
+const Rightsidebar = ({price ,cartItemId  } : {price :string ,cartItemId :string } ) => {
+  const { DeleteCartitem , loading, error } = useDeltecartItem();
 
   const DeleteItem = async () =>{
     try {

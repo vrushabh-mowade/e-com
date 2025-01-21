@@ -7,7 +7,6 @@ export interface CartProps {
   price: string;
   manufacturer: string;
   cartItemId :string,
-  onDelete : ()=>(void)
 }
 
 export const CartItem = ({
@@ -16,8 +15,6 @@ export const CartItem = ({
   mainImage ,
   price,
   cartItemId,
-  onDelete 
-
 } : CartProps) => {
 
 
@@ -37,7 +34,7 @@ export const CartItem = ({
           <div className="text-sm ">{title}</div>
         </div>
       </div>
-      <Rightsidebar price={price} cartItemId={cartItemId} onDelete={onDelete}/>
+      <Rightsidebar price={price} cartItemId={cartItemId} />
     </div>
   );
 };

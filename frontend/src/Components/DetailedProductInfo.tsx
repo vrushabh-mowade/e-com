@@ -51,6 +51,12 @@ const DetailedProductInfo = ({productDetails}: { productDetails: Product | null}
   const {uploadToCart , error : uploaderror ,loading :uploadloading} = useUploadToCart();
 
 
+useEffect(() => {
+  if (isincart !== undefined && isincart !== null) {
+    setisIncart(isincart);
+  }
+}, [isincart]); 
+
   useEffect(() => {
     if (!loading && inwishlist !== null) {
       setIsInWishlist(inwishlist);
@@ -84,9 +90,6 @@ const DetailedProductInfo = ({productDetails}: { productDetails: Product | null}
       console.error("Error uploading the data to cartitem:", err);
     }
   };
-
-
-
   if (!productDetails) {
     return <>product details not fetched</>;
   }

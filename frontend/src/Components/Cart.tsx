@@ -1,8 +1,8 @@
 import { Link } from "react-router";
 import { useGetcartitems } from "../hooks/Cart";
 import { CartItem } from "./CartItem";
-import { jwtDecode } from "jwt-decode";
-import { useCallback, useState ,useEffect} from "react";
+import {jwtDecode} from "jwt-decode";
+import { useState, useEffect } from "react";
 
 type Product = {
   manufacturer: string;
@@ -14,15 +14,16 @@ type Product = {
 type CartItemDetails = {
   productId: string;
   product: Product;
+  quantity: number;
 };
 
 type CartItemType = {
   id: string;
-  items: CartItemDetails[];
+  cartId: string;
+  productId: string;
+  quantity: number;
+  product: Product;
 };
-
-type CartItemsState = Record<string, CartItemType>;
-
 
 export const Cart = () => {
   const wholeToken = localStorage.getItem("token");
@@ -31,107 +32,90 @@ export const Cart = () => {
   if (!token) {
     throw new Error("Token not found");
   }
+
   const decoded = jwtDecode<{ id: string }>(token);
   const userId = decoded.id;
   localStorage.setItem("userId", userId);
 
   const { cartData, loading, error } = useGetcartitems(userId || "");
-  const [cartItems, setCartItems] = useState<CartItemsState>({}); // State for individual cart items
+  const [cartItems, setCartItems] = useState<CartItemType[]>([]);
 
-
-  // const refreshCartData = useCallback(async () => {
-  //   try {
-  //     const { cartData: refreshedData } = await useGetcartitems(userId);
-  //     setCartData(refreshedData);
-  //   } catch (err) {
-  //     console.error("Error refreshing cart data:", err);
-  //   }
-  // }, [userId]);
-  
+  // Update cartItems state when cartData is fetched
+  useEffect(() => {
+    if (cartData?.cartItems) {
+      setCartItems(cartData.cartItems);
+    }
+  }, [cartData]);
 
   if (!loading) {
-    return (
-      <>
-        <div>loading the cart items ....</div>
-      </>
-    );
+    return <div>Loading the cart items...</div>;
   }
 
   if (error) {
-    console.log("the error is ", error);
+    console.error("Error fetching cart items:", error);
+    return <div>Error fetching cart items. Please try again later.</div>;
   }
+
   let total = 0;
 
-  cartData?.cartItems.forEach((item)=>{
-    
-  })
-
-  // cartData?.cartItems.forEach((cartItem) => {
-  //   const items = cartItem.items;
-  //   items.forEach((item) => {
-  //     console.log(
-  //       `product id ${item.productId} has main image as  `,
-  //       item.product.mainImage
-  //     );
-  //     total = total + parseInt(item.product.price)*(item.quantity);
-  //   });
-  // });
-
-  console.log(total);
+  cartItems.forEach((item) => {
+    const quantity = item.quantity;
+    const price = parseInt(item.product.price, 10); // Convert price to a number
+    total += price * quantity;
+  });
 
   return (
     <div className="flex justify-center">
       <div className="grid grid-flow-col auto-cols-max">
-        <div  className="flex flex-col items-center">
-        {Object.values(cartItems).map((cartItem) => (
-            <div key={cartItem.id} className="mb-5">
-              {cartItem.items.map((item) => (
-                <CartItem
-                  key={item.productId}
-                  manufacturer={item.product.manufacturer}
-                  title={item.product.title}
-                  mainImage={item.product.mainImage}
-                  price={item.product.price}
-                  cartItemId={cartItem.id}
-                />
-              ))}
+        {/* Cart Items Section */}
+        <div className="flex flex-col items-center">
+          {cartItems.map((cartItem) => (
+            <div key={cartItem.productId} className="mb-5">
+              <CartItem
+                key={cartItem.productId}
+                manufacturer={cartItem.product.manufacturer || "Unknown"} // Add fallback if manufacturer is missing
+                title={cartItem.product.title}
+                mainImage={cartItem.product.mainImage}
+                price={cartItem.product.price}
+                cartItemId={cartItem.id}
+              />
             </div>
           ))}
         </div>
+
+        {/* Order Summary Section */}
         <div className="flex flex-col">
-          <div className="w-[300px] h-[250px] shadow-md bg-[#FAFAFA] flex flex-col justify-between ">
+          <div className="w-[300px] h-[250px] shadow-md bg-[#FAFAFA] flex flex-col justify-between">
             <div className="p-4">
               <div className="text-base font-semibold font-serif text-zinc-600">
-                Order details
+                Order Details
               </div>
 
               <div className="p-1 text-xs font-sans font-light">
                 <div className="flex justify-between p-1">
-                  <div>Bag mrp</div>
-                  <div className=""> 12000</div>
+                  <div>Bag MRP</div>
+                  <div>₹ {total}</div>
                 </div>
-
                 <div className="flex justify-between p-1">
-                  <div>Platform fees</div>
-                  <div> 12</div>
+                  <div>Platform Fees</div>
+                  <div>₹ 12</div>
                 </div>
               </div>
-              
+
               <div className="flex justify-between p-1 text-sm font-sans font-light">
-                <div>Total price</div>
-                <div> {total}</div>
+                <div>Total Price</div>
+                <div>₹ {total + 12}</div>
               </div>
             </div>
+
             <div className="w-full flex items-center justify-center bg-[#866528] p-4 text-white text-sm">
-              <Link to={"/shipping"}>
+              <Link to="/shipping">
                 <button className="bg-transparent text-white border-none cursor-pointer">
                   PROCEED TO PURCHASE
                 </button>
               </Link>
             </div>
-
           </div>
-          <div>hii</div>
         </div>
       </div>
     </div>

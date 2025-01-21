@@ -52,7 +52,7 @@ export const useGetcartitems = (userId :string) :{cartData : CartApiResponse | n
         }
     });
         setcartData(response.data || null);
-        console.log("API response data is 1" ,response.data); 
+        console.log("API response data from new 1",response.data); 
     } catch (err) {
         console.error("Error fetching product details:", err);
         setError(err as Error); 
@@ -140,34 +140,25 @@ return { uploadToCart, loading, error };
 };
 
 //used to delete the cart item using the cartid 
-export const useDeltecartItem = (
-  onCartRefresh?: () => void
-): {
-  DeleteCartitem: (cartItemId: string) => Promise<void>;
-  loading: boolean;
-  error: Error | null;
-} => {
-  const [error, setError] = useState<Error | null>(null);
-  const [loading, setLoading] = useState<boolean>(false); // Initially false
+export const useDeltecartItem = (): { DeleteCartitem: (cartItemId: string) => Promise<void>; loading: boolean; error: Error | null } => {
+const [error, setError] = useState<Error | null>(null);
+const [loading, setLoading] = useState<boolean>(false); // Initially false
 
-  const DeleteCartitem = async (cartItemId: string) => {
+const DeleteCartitem = async (cartItemId: string) => {
     setLoading(true);
     setError(null); // Reset error on a new request
     try {
-      const response = await axios.delete(`${BACKEND_URL}/allcartoption/${cartItemId}`);
-      console.log("API response for deletion is:", response.data);
-
-      // Trigger the refresh callback if provided
-      onCartRefresh?.();
+    const response = await axios.delete(`${BACKEND_URL}/allcartoption/${cartItemId}`);
+    console.log("API response for deletion is:", response.data);
     } catch (err) {
-      setError(err as Error);
+    setError(err as Error);
       console.error("Error deleting cart item:", err); // Log the error for debugging
     } finally {
       setLoading(false); // Ensure loading is reset
     }
-  };
+};
 
-  return { DeleteCartitem, loading, error };
+return { DeleteCartitem, loading, error };
 };
 
 

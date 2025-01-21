@@ -51,11 +51,15 @@ const ImageComponent = ({Imagearray}: {Imagearray : string[]} ) => {
 
   return (
       <div className="flex">
-            <div className="w-52">
-              <div className="grid grid-flow-col auto-cols-max bg-white">
-                <Slider currentindex={currentindex} Imagearray={Imagearray} />
+        <div>
+            <div className="w-36">
+              <div className="flex justify-center items-center ">
+                <div className="grid grid-flow-col auto-cols-max bg-white ">
+                  <Slider currentindex={currentindex} Imagearray={Imagearray} />
+                </div>
               </div>
             </div>
+        </div>
             <div className="w-475">
               <div>
                 <div className="flex">
@@ -69,7 +73,7 @@ const ImageComponent = ({Imagearray}: {Imagearray : string[]} ) => {
                   </div>
 
                   <div>
-                    <img height="593" width="473" src={Imagearray[currentindex]} alt={`Slide ${currentindex + 1}`}>
+                    <img height="800" width="638" src={Imagearray[currentindex]} alt={`Slide ${currentindex + 1}`}>
                     </img>
                   </div>
 
@@ -93,7 +97,7 @@ const ImageComponent = ({Imagearray}: {Imagearray : string[]} ) => {
 
 export const Slider=({currentindex ,Imagearray}: SliderProps)=>{
   return<>
-  <div className="flex justify-center p-2">
+  <div className="flex justify-center p-2 ">
     <div className="flex flex-col gap-2">
         <div className="flex items-center justify-center">
               <button>

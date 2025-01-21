@@ -56,18 +56,13 @@ const ProductPage = () => {
     return <div>Loading...</div>;
   }
 
-  const Cartcomponent = () => {
-    console.log("Navigating to product:", id);
-    navigate(`/cart/${id}`);
-};
-
   console.log("the image array is",Imagearray );
   console.log("the image array from product page is",Imagearray[4]);
   return (
     <>
       <div>
         <div>
-          <div className="grid grid-flow-col auto-cols-max flex justify-center w-full">
+          <div className="grid grid-flow-col auto-cols-max flex justify-center w-full h-full">
             <div className="w-[797px] bg-red-200 grid grid-flow-col auto-cols-max">
               <div>
                 <ImageComponent Imagearray={Imagearray} />
@@ -80,9 +75,6 @@ const ProductPage = () => {
             </div>
           </div>
         </div>
-        <button onClick={Cartcomponent}>
-              Go to Bag
-        </button>
       </div>
     </>
   );

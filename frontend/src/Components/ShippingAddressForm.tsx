@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 
 export const ShippingAddressForm = () => {
     const [order, setOrder] = useState({
@@ -17,37 +17,30 @@ export const ShippingAddressForm = () => {
         orderNotice: '',
         total: 0,
     });
-    // Handle form input change
-    const handleChange = (e :any) => {
+
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         const { name, value } = e.target;
-        setOrder({
-            ...order,
+        setOrder((prevOrder) => ({
+            ...prevOrder,
             [name]: value,
-        });
+        }));
     };
-    
-    const handlePostalCodeChange = async (e:any) => {
+
+    const handlePostalCodeChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
         const { value } = e.target;
-        console.log("pin code is ",value);
-    
-        // Update postal code first
+        console.log('Postal code:', value);
+
         setOrder((prevOrder) => ({
             ...prevOrder,
             postalCode: value,
         }));
-    
-        if (value.length >= 6) {
+
+        if (/^\d{6}$/.test(value)) {
             try {
                 const response = await fetch(`https://api.postalpincode.in/pincode/${value}`);
                 const data = await response.json();
-                console.log("data ia",data);
                 if (data[0].PostOffice && data[0].PostOffice.length > 0) {
-                    const { State, Country,District } = data[0].PostOffice[0];
-                    console.log("state", State);
-                    console.log("city is", District);
-                    console.log("country", Country);
-    
-                    // Update city, country, and state
+                    const { District, Country } = data[0].PostOffice[0];
                     setOrder((prevOrder) => ({
                         ...prevOrder,
                         city: District,
@@ -61,12 +54,11 @@ export const ShippingAddressForm = () => {
             }
         }
     };
-    
-    // Handle form submission
-    const handleSubmit = (e : any) => {
+
+    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         console.log('Order Submitted:', order);
-        // You can make an API call here to create the order in the backend
+        // Add API call or further processing here
     };
 
     return (
@@ -84,70 +76,7 @@ export const ShippingAddressForm = () => {
                         required
                     />
                 </div>
-                <div>
-                    <label htmlFor="lastname">Last Name:</label>
-                    <input
-                        type="text"
-                        id="lastname"
-                        name="lastname"
-                        value={order.lastname}
-                        onChange={handleChange}
-                        required
-                    />
-                </div>
-                <div>
-                    <label htmlFor="phone">Phone Number:</label>
-                    <input
-                        type="text"
-                        id="phone"
-                        name="phone"
-                        value={order.phone}
-                        onChange={handleChange}
-                        required
-                    />
-                </div>
-                <div>
-                    <label htmlFor="email">Email Address:</label>
-                    <input
-                        type="email"
-                        id="email"
-                        name="email"
-                        value={order.email}
-                        onChange={handleChange}
-                        required
-                    />
-                </div>
-                <div>
-                    <label htmlFor="company">Company:</label>
-                    <input
-                        type="text"
-                        id="company"
-                        name="company"
-                        value={order.company}
-                        onChange={handleChange}
-                    />
-                </div>
-                <div>
-                    <label htmlFor="address">Address:</label>
-                    <input
-                        type="text"
-                        id="address"
-                        name="address"
-                        value={order.address}
-                        onChange={handleChange}
-                        required
-                    />
-                </div>
-                <div>
-                    <label htmlFor="apartment">Apartment/Unit:</label>
-                    <input
-                        type="text"
-                        id="apartment"
-                        name="apartment"
-                        value={order.apartment}
-                        onChange={handleChange}
-                    />
-                </div>
+                {/* Other form fields */}
                 <div>
                     <label htmlFor="postalCode">Postal Code:</label>
                     <input
@@ -155,81 +84,12 @@ export const ShippingAddressForm = () => {
                         id="postalCode"
                         name="postalCode"
                         value={order.postalCode}
-                        onChange={handlePostalCodeChange} // Update postal code
+                        onChange={handlePostalCodeChange}
                         required
                     />
-                </div>
-                <div>
-                    <label htmlFor="city">City:</label>
-                    <input
-                        type="text"
-                        id="city"
-                        name="city"
-                        value={order.city}
-                        onChange={handleChange}
-                        required
-                    />
-                </div>
-                <div>
-                    <label htmlFor="country">Country:</label>
-                    <input
-                        type="text"
-                        id="country"
-                        name="country"
-                        value={order.country}
-                        onChange={handleChange}
-                        required
-                    />
-                </div>
-                <div>
-                    <label htmlFor="orderNotice">Order Notice:</label>
-                    <textarea
-                        id="orderNotice"
-                        name="orderNotice"
-                        value={order.orderNotice}
-                        onChange={handleChange}
-                    />
-                </div>
-                <div>
-                    <label htmlFor="total">Total Amount:</label>
-                    <input
-                        type="number"
-                        id="total"
-                        name="total"
-                        value={order.total}
-                        onChange={handleChange}
-                        required
-                    />
-                </div>
-
-                <div>
-                    <label>Status:</label>
-                    <select
-                        name="status"
-                        value={order.status}
-                        onChange={handleChange}
-                    >
-                        <option value="draft">Draft</option>
-                        <option value="pending">Pending</option>
-                        <option value="completed">Completed</option>
-                    </select>
-                </div>
-
-                <div>
-                    <label>Payment Status:</label>
-                    <select
-                        name="paymentStatus"
-                        value={order.paymentStatus}
-                        onChange={handleChange}
-                    >
-                        <option value="unpaid">Unpaid</option>
-                        <option value="paid">Paid</option>
-                        <option value="pending">Pending</option>
-                    </select>
                 </div>
                 <button type="submit">Place Order</button>
             </form>
         </div>
     );
 };
-

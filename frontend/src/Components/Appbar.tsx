@@ -7,7 +7,8 @@ import Searchbar from "./Searchbar";
 
 const Appbar = () => {
     return <>
-        <header className="relative h-20 w-full shadow-sm shadow-slate-900 sticky top-0 z-10 bg-white">
+    <div className="flex justify-center items-center">
+        <div className="relative h-20 w-full shadow-sm shadow-slate-900 sticky top-0 z-10 bg-white">
             <div id="websitename" className="absolute top-9 sm:left-4  md:left-4 lg:left-10 xl:left-16 2xl:left-64 ">
                 <span className="text-3xl">Ecom</span>
             </div>
@@ -56,8 +57,9 @@ const Appbar = () => {
                     </div>
                 </div>
             </div>
-        </header>
-    </>
+        </div>
+    </div>
+</>
 
 }
 

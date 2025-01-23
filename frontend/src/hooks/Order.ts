@@ -73,11 +73,9 @@ export const usePostShippingDetails = (ShippingInputProps: ShippingInputProps): 
       setLoading(false);
     }
   };
-
   useEffect(() => {
     postshippingDetails();
   }, []);
-
   return { shippingDetails, error, loading };
 };
 

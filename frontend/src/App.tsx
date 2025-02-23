@@ -9,6 +9,10 @@ import { Signin } from './Pages/Signin';
 import CartPage from './Pages/CartPage';
 import ShippingPage from './Pages/ShippingPage';
 import PaymentPage from './Pages/PaymentPage';
+import { OrderProvider } from './Components/UseOrdercontext';
+
+
+
 
 function App() {
   return (
@@ -20,7 +24,14 @@ function App() {
           <Route path="/signin" element={<Signin/>} />
           <Route path='/product/:id' element={<ProductPage/>}/>
           <Route path='/cart/:userId' element={<CartPage/>}/>
-          <Route path='/shipping' element={<ShippingPage/>}/>
+          <Route
+            path='/shipping'
+            element={
+              <OrderProvider>
+                <ShippingPage/>
+              </OrderProvider>
+            }
+          />
           <Route path='/checkout' element={<PaymentPage/>}/>
           
           <Route path='/test' element={<Testpage/>}/>

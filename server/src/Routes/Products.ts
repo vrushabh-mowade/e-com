@@ -13,33 +13,33 @@ export const productsrouter = new Hono<{ Bindings: Bindings }>();
 
 
 
-productsrouter.use('/*', async (c, next) => {
+// productsrouter.use('/*', async (c, next) => {
 
-    const prisma = new PrismaClient({
-        //@ts-ignore
-        datasourceUrl: c.env?.DATABASE_URL,
-    }).$extends(withAccelerate());
-    const authheader = c.req.header("Authorization");
-    const token = authheader?.split(" ")[1]; 
-    try {
-        const user = await verify(token || "", c.env.JWT_SECRET);
-        if (user) {
-            //@ts-ignore
-            c.set("userId", user.id);
-            await next()
-        } else {
-            c.status(411);
-            return c.json({
-                "error": "authorization error "
-            })
-        }
-    } catch (e) {
-        c.status(403);
-        return c.json({
-            "error": "you are not logged in  "
-        })
-    }
-})
+//     const prisma = new PrismaClient({
+//         //@ts-ignore
+//         datasourceUrl: c.env?.DATABASE_URL,
+//     }).$extends(withAccelerate());
+//     const authheader = c.req.header("Authorization");
+//     const token = authheader?.split(" ")[1]; 
+//     try {
+//         const user = await verify(token || "", c.env.JWT_SECRET);
+//         if (user) {
+//             //@ts-ignore
+//             c.set("userId", user.id);
+//             await next()
+//         } else {
+//             c.status(411);
+//             return c.json({
+//                 "error": "authorization error "
+//             })
+//         }
+//     } catch (e) {
+//         c.status(403);
+//         return c.json({
+//             "error": "you are not logged in  "
+//         })
+//     }
+// })
 
 //get all product remaininng
 // Get all products
@@ -85,6 +85,7 @@ productsrouter.post('/', async (c) => {
 
     try {
         const body = await c.req.json();
+        console.log(body);
         const product = await prisma.product.create({
             data: {
                 slug: body.slug,

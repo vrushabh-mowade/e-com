@@ -1,7 +1,32 @@
-import { Link } from "react-router";
-import { usePostproducttoorder, usePostShippingDetails } from "../hooks/Order";
-import { ShippingAddressForm } from "./ShippingAddressForm";
-import { useState } from "react";
+import { Link, useNavigate } from "react-router";
+import { usePostproducttoorder } from "../hooks/Order";
+import { useEffect ,useState} from "react";
+
+
+
+export interface CustomerOrderResponse {
+  customerorder: {
+    id: string;
+    name: string;
+    lastname: string;
+    phone: string;
+    email: string;
+    company: string;
+    address: string;
+    apartment: string;
+    postalCode: string;
+    dateTime: string;
+    status: string;
+    paymentStatus: string;
+    city: string;
+    country: string;
+    orderNotice: string;
+    total: number;
+    userId: string;
+    cartId: string | null;
+  };
+  msg: string;
+}
 
 export interface ShippingInputProps {
   name: string;
@@ -13,10 +38,13 @@ export interface ShippingInputProps {
   apartment: string;
   postalCode: string;
   status: string;
+  paymentStatus: string;
   city: string;
   country: string;
   orderNotice: string;
   total: number;
+  cartId: string;
+  userId: string;
 }
 
 export interface CustCartId {
@@ -26,53 +54,89 @@ export interface CustCartId {
 
 // shippingInput : ShippingInputProps
 
-const Shipping: React.FC<ShippingInputProps> = () => {
-  const {order} = ShippingAddressForm();
-  const [orderDetails ,setorderDetails] = useState({});
-    const { shippingDetails, loading: shippingLoading ,  error: shippingError } = usePostShippingDetails(
-    {"name": "yash",
-    "lastname": "pandey",
-    "phone": "+123456789",
-    "email": "john.yashpandey.com",
-    "company": "gh raisoni nagpur",
-    "address": "hingna t point",
-    "apartment": "4A",
-    "postalCode": "12345",
-    "status": "Pending",
-    "city": "Metropolis",
-    "country": "india",
-    "orderNotice": "Leave the package at the front door.",
-    "total": 100}
-  );
-  const { cartItems, loading: cartLoading, error: cartError } = usePostproducttoorder(
-    shippingDetails?.customerorder.id ? { customerorderId: shippingDetails.customerorder.id, cartId: "6f249203-698c-4e64-bbcd-44b124c6a9dd" } : { customerorderId: "", cartId: "" }
-  );
+const Shipping: React.FC = () => {
+  const navigate = useNavigate();
+  const [exists, setexists] = useState<Boolean>(false);
+  const [shippingDetails, setshippingDetails] = useState<any | null>(null);
+  const [loading ,setloading] = useState(true);
+  const { producttoOrder , loading: cartLoading, error: cartError } = usePostproducttoorder();
 
-    if (shippingLoading) {
-      return <>Loading the shipping details page...</>;
+  const loadShippingDetails = () => {
+    const shippingDetailsData = sessionStorage.getItem("shippingDetails");
+    if (shippingDetailsData) {
+      try {
+        const parsedDetails = JSON.parse(shippingDetailsData);
+        if (parsedDetails?.msg !== "empty" && parsedDetails?.customerorder) {
+          console.log("Parsed data:", parsedDetails);
+          setshippingDetails(parsedDetails);
+          setexists(true);
+          setloading(false);
+        } else {
+          console.log("Empty shipping details.");
+          setexists(false);
+          setloading(false);
+        }
+      } catch (error) {
+        console.error("Error parsing shipping details:", error);
+        setexists(false);
+      }
+    } else {
+      setexists(false);
+      setloading(true);
     }
+  };
 
-    if (!shippingError) {
-      console.log("Error in the shipping page is 1", shippingError);
-      return <>Error loading shipping details!</>;
+  // Effect to load details on component mount
+  useEffect(() => {
+    if (!exists) {
+      loadShippingDetails();
     }
+  }, [exists]);
+  
 
-    console.log("Shipping details are", shippingDetails);
-    console.log("Shipping details are", shippingDetails?.customerorder.id);
+  // Effect to re-run `loadShippingDetails` when sessionStorage changes
+  useEffect(() => {
+    const handleStorageChange = () => {
+      loadShippingDetails();
+    };
+  
+    window.addEventListener("storage", handleStorageChange);
+    return () => {
+      window.removeEventListener("storage", handleStorageChange);
+    };
+  }, []);
+  
+
+  // Trigger re-render when sessionStorage value changes locally
+  useEffect(() => {
+    const intervalId = setInterval(() => {
+      if (!exists) {
+        loadShippingDetails();
+      } else {
+        clearInterval(intervalId); // Stop polling if data exists
+      }
+    }, 1000); // Poll every second
+  
+    return () => clearInterval(intervalId); // Cleanup on unmount
+  }, [exists]);
+  
+  if(loading){
+    return <>
+      <div >
+        <Link to={"/"}>error go to the previous page</Link>
+      </div></>
+
+  }
+
+
     //  "e5d3a27e-1680-4e18-8a8e-c03eebfc3d0c"
     // "6f249203-698c-4e64-bbcd-44b124c6a9dd"
 
-    if (cartLoading) {
-      return <>Loading the shipping details page...</>;
-    }
-
-    if (cartError) {
-      console.log("Error in the shipping page is 2", cartError);
-      return <>Error loading shipping details!</>;
-    }
-
-    console.log("carrtitems are :",cartItems);
-    console.log("shipping details  are as follow  :", shippingDetails);
+    const handleSubmit = async () => {
+            await producttoOrder("6f249203-698c-4e64-bbcd-44b124c6a9dd", "7b440e88-23f1-4f2e-b3a9-98e6b8b60c9d");
+            navigate("/checkout");
+        };
+    
 
 
   return (
@@ -112,36 +176,50 @@ const Shipping: React.FC<ShippingInputProps> = () => {
               </div>
             </div>
           </div>
-
-          <div id="Address-Form" className="w-[883px] shadow-md flex items-center">
-            <div className="w-full">
-              <div className="p-4">
-                <div className="flex text-sm font-medium">
-                  <div>vrushabh</div>
-                  <div> </div>
-                </div>
-
-                <div className="font-thin text-xs font-sans pt-2">
-                  <div> apratment number or flat numbers </div>
-                  <div>8 th mail amravati raod nagpur </div>
-                  <div className="flex gap-1">
-                    <div>nagpur</div>
-                    <div>maharashtra</div>
+          {exists ? (
+            <div
+              id="Address-Form"
+              className="w-[883px] shadow-md flex items-center"
+            >
+              <div className="w-full">
+                <div className="p-4">
+                  <div className="flex text-sm font-medium">
+                    <div>{shippingDetails?.customerorder.name}</div>
+                    <div> </div>
                   </div>
-                  <div className="flex gap-1">
-                    <div>india</div>
-                    <div>440023</div>
+                  <div className="font-thin text-xs font-sans pt-2">
+                    <div>{shippingDetails?.customerorder.apartment}</div>
+                    <div>{shippingDetails?.customerorder.address}</div>
+                    <div className="flex gap-1">
+                      <div>{shippingDetails?.customerorder.city}</div>
+                      <div>{shippingDetails?.customerorder.city}</div>
+                    </div>
+                    <div className="flex gap-1">
+                      <div>{shippingDetails?.customerorder.country}</div>
+                      <div>{shippingDetails?.customerorder.postalCode}</div>
+                    </div>
+                    <div className="font-normal">phone : {shippingDetails?.customerorder.phone}</div>
                   </div>
-                  <div className="font-normal">phone : 9356670389</div>
+                  <div className="text-xs font-medium pt-8 text-sky-600">
+                    <Link to={"/test"}>Change Address</Link>
+                  </div>
                 </div>
-
+                <hr className="w-full border-t border-gray-300 " />
+              </div>
+            </div>
+          ) : (
+            <div id="Address-Form" className="w-[883px] shadow-md flex items-center">
+              <div className="w-full">
+                <div>Give the address</div>
                 <div className="text-xs font-medium pt-8 text-sky-600">
                   <Link to={"/test"}>Change Address</Link>
                 </div>
+                <hr className="w-full border-t border-gray-300 " />
               </div>
-              <hr className="w-full border-t border-gray-300 " />
             </div>
-          </div>
+          )}
+
+          
         </div>
 
         <div className="flex flex-col">
@@ -170,7 +248,7 @@ const Shipping: React.FC<ShippingInputProps> = () => {
             </div>
             <div className="w-full flex items-center justify-center bg-[#866528] p-4 text-white text-sm">
               <Link to={"/checkout"}>
-                <button className="bg-transparent text-white border-none cursor-pointer">
+                <button onSubmit={handleSubmit} className="bg-transparent text-white border-none cursor-pointer">
                   PROCEED FOR PAYMENT
                 </button>
               </Link>
@@ -184,3 +262,38 @@ const Shipping: React.FC<ShippingInputProps> = () => {
 };
 
 export default Shipping;
+
+
+
+
+// <div
+//             id="Address-Form"
+//             className="w-[883px] shadow-md flex items-center">
+//             <div className="w-full">
+//               <div className="p-4">
+//                 <div className="flex text-sm font-medium">
+//                   <div>vrushabh</div>
+//                   <div> </div>
+//                 </div>
+
+//                 <div className="font-thin text-xs font-sans pt-2">
+//                   <div> apratment number or flat numbers </div>
+//                   <div>8 th mail amravati raod nagpur </div>
+//                   <div className="flex gap-1">
+//                     <div>nagpur</div>
+//                     <div>maharashtra</div>
+//                   </div>
+//                   <div className="flex gap-1">
+//                     <div>india</div>
+//                     <div>440023</div>
+//                   </div>
+//                   <div className="font-normal">phone : 9356670389</div>
+//                 </div>
+
+//                 <div className="text-xs font-medium pt-8 text-sky-600">
+//                   <Link to={"/test"}>Change Address</Link>
+//                 </div>
+//               </div>
+//               <hr className="w-full border-t border-gray-300 " />
+//             </div>
+//           </div>

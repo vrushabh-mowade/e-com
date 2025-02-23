@@ -1,0 +1,14 @@
+{
+  "name": "e-com",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+  "start:frontend": "cd frontend && npm run dev",
+  "start:server": "cd server && npm run dev",
+  "start:prismastudio": "cd server/prisma && npx prisma studio",
+  "start:all": "concurrently \"npm run start:frontend\" \"npm run start:server\" \"npm run start:prismastudio\""
+},
+  "author": "",
+  "license": "ISC"
+}

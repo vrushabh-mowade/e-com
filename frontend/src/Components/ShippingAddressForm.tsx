@@ -1,6 +1,13 @@
 import React, { useState } from 'react';
+import { usetopostCustomerOrder } from '../hooks/Order';
+import { useNavigate } from 'react-router';
 
-export const ShippingAddressForm = () => {
+
+export const ShippingAddressForm = ()  => {
+    const navigate = useNavigate();
+    const userId = localStorage.getItem('userId');
+    const cardId = localStorage.getItem('cartId');
+    const {postFormDetails  ,loading : postingloading,error :posterror} = usetopostCustomerOrder();
     const [order, setOrder] = useState({
         name: '',
         lastname: '',
@@ -10,12 +17,14 @@ export const ShippingAddressForm = () => {
         address: '',
         apartment: '',
         postalCode: '',
-        status: 'draft',
-        paymentStatus: 'unpaid',
+        status :'',
+        paymentStatus :'draft',
         city: '',
         country: '',
         orderNotice: '',
         total: 0,
+        userId: userId!,
+        cartId :cardId!
     });
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -28,7 +37,6 @@ export const ShippingAddressForm = () => {
 
     const handlePostalCodeChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
         const { value } = e.target;
-        console.log('Postal code:', value);
 
         setOrder((prevOrder) => ({
             ...prevOrder,
@@ -55,9 +63,11 @@ export const ShippingAddressForm = () => {
         }
     };
 
-    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        console.log('Order Submitted:', order);
+        await postFormDetails(order);
+        navigate("/shipping");
+        
         // Add API call or further processing here
     };
 
@@ -76,7 +86,70 @@ export const ShippingAddressForm = () => {
                         required
                     />
                 </div>
-                {/* Other form fields */}
+                <div>
+                    <label htmlFor="lastname">Last Name:</label>
+                    <input
+                        type="text"
+                        id="lastname"
+                        name="lastname"
+                        value={order.lastname}
+                        onChange={handleChange}
+                        required
+                    />
+                </div>
+                <div>
+                    <label htmlFor="phone">Phone:</label>
+                    <input
+                        type="tel"
+                        id="phone"
+                        name="phone"
+                        value={order.phone}
+                        onChange={handleChange}
+                        required
+                    />
+                </div>
+                <div>
+                    <label htmlFor="email">Email:</label>
+                    <input
+                        type="email"
+                        id="email"
+                        name="email"
+                        value={order.email}
+                        onChange={handleChange}
+                        required
+                    />
+                </div>
+                <div>
+                    <label htmlFor="company">Company:</label>
+                    <input
+                        type="text"
+                        id="company"
+                        name="company"
+                        value={order.company}
+                        onChange={handleChange}
+                    />
+                </div>
+                <div>
+                    <label htmlFor="address">Address:</label>
+                    <input
+                        type="text"
+                        id="address"
+                        name="address"
+                        value={order.address}
+                        onChange={handleChange}
+                        required
+                    />
+                </div>
+                <div>
+                    <label htmlFor="apartment">Apartment:</label>
+                    <input
+                        type="text"
+                        id="apartment"
+                        name="apartment"
+                        value={order.apartment}
+                        onChange={handleChange}
+                    />
+                </div>
                 <div>
                     <label htmlFor="postalCode">Postal Code:</label>
                     <input
@@ -88,7 +161,39 @@ export const ShippingAddressForm = () => {
                         required
                     />
                 </div>
+                <div>
+                    <label htmlFor="city">City:</label>
+                    <input
+                        type="text"
+                        id="city"
+                        name="city"
+                        value={order.city}
+                        onChange={handleChange}
+                        readOnly
+                    />
+                </div>
+                <div>
+                    <label htmlFor="country">Country:</label>
+                    <input
+                        type="text"
+                        id="country"
+                        name="country"
+                        value={order.country}
+                        onChange={handleChange}
+                        readOnly
+                    />
+                </div>
+                <div>
+                    <label htmlFor="orderNotice">Order Notice:</label>
+                    <textarea
+                        id="orderNotice"
+                        name="orderNotice"
+                        value={order.orderNotice}
+                        onChange={handleChange}
+                    />
+                </div>
                 <button type="submit">Place Order</button>
+                
             </form>
         </div>
     );

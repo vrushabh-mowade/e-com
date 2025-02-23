@@ -9,6 +9,7 @@ import { customer_orderproduct_router } from './Customer_orderproduct';
 import { slugrouter } from './slug';
 import { searchrouter } from './Search';
 import { allcartoptionrouter } from './AllCartOption';
+import { adminrouter } from './Adminuser';
 
 
 export const Mainrouter = new Hono();
@@ -20,6 +21,7 @@ Mainrouter.onError((err, c) => {
 
 
 Mainrouter.route('/user' ,userrouter);
+Mainrouter.route('/admin/user' ,adminrouter);
 Mainrouter.route('/products',productsrouter);
 Mainrouter.route('/category',categoryrouter);
 Mainrouter.route('/images',imagerouter);

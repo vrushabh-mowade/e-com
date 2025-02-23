@@ -1,9 +1,8 @@
-import { Link } from "react-router";
 import { useGetcartitems } from "../hooks/Cart";
 import { CartItem } from "./CartItem";
-import { SkeletonCartItem } from "./Skeletons/SkeletonCartItem"; // Import Skeleton
 import { jwtDecode } from "jwt-decode";
 import { useState, useEffect } from "react";
+import OrdersectionSummary from "./OrdersectionSummary";
 
 type Product = {
   manufacturer: string;
@@ -12,13 +11,7 @@ type Product = {
   price: string;
 };
 
-type CartItemDetails = {
-  productId: string;
-  product: Product;
-  quantity: number;
-};
-
-type CartItemType = {
+export type CartItemType = {
   id: string;
   cartId: string;
   productId: string;
@@ -38,8 +31,6 @@ export const Cart = () => {
   const userId = decoded.id;
   localStorage.setItem("userId", userId);
   
-  
-
   const { cartData, loading, error } = useGetcartitems(userId || "");
   const [cartItems, setCartItems] = useState<CartItemType[]>([]);
 
@@ -56,13 +47,11 @@ export const Cart = () => {
   }
 
   let total = 0;
-
   cartItems.forEach((item) => {
     const quantity = item.quantity;
     const price = parseInt(item.product.price, 10); // Convert price to a number
     total += price * quantity;
   });
-
 
   return (
     <div className="flex justify-center ">
@@ -87,37 +76,8 @@ export const Cart = () => {
         </div>
 
         {/* Order Summary Section */}
-        <div className="flex flex-col">
-          <div className="w-[300px] h-[250px] shadow-md bg-[#FAFAFA] flex flex-col justify-between">
-            <div className="p-4">
-              <div className="text-base font-semibold font-serif text-zinc-600">
-                Order Details
-              </div>
-              <div className="p-1 text-xs font-sans font-light">
-                <div className="flex justify-between p-1">
-                  <div>Bag MRP</div>
-                  <div>₹ {total}</div>
-                </div>
-                <div className="flex justify-between p-1">
-                  <div>Platform Fees</div>
-                  <div>₹ 12</div>
-                </div>
-              </div>
-              <div className="flex justify-between p-1 text-sm font-sans font-light">
-                <div>Total Price</div>
-                <div>₹ {total + 12}</div>
-              </div>
-            </div>
-            <div className="w-full flex items-center justify-center bg-[#866528] p-4 text-white text-sm">
-              <Link to="/shipping">
-                <button className="bg-transparent text-white border-none cursor-pointer">
-                  PROCEED TO PURCHASE
-                </button>
-              </Link>
-            </div>
-          </div>
-        </div>
-
+        <OrdersectionSummary total={total}/>
+        
       </div>
     </div>
   );

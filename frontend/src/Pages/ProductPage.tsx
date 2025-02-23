@@ -1,10 +1,9 @@
 import ImageComponent from "../Components/ImageComponent";
 import DetailedProductInfo from "../Components/DetailedProductInfo";
-import { useNavigate, useParams } from "react-router";
+import { useParams } from "react-router";
 import { useGetProductdetails, useGetProductImages } from "../hooks/products";
 import { useState, useEffect } from "react";
-
-
+import Appbar from "../Components/Appbar";
 
 export interface Product {
   id: string;
@@ -29,7 +28,6 @@ const ProductPage = () => {
   const [productDetails, setProductDetails] = useState<Product| null>(null);
   const [Imagearray, setImagearray] = useState<string[] | null>(null);
   
-  const navigate = useNavigate();
   
   useEffect(() => {
     if (details) {
@@ -61,6 +59,9 @@ const ProductPage = () => {
   return (
     <>
       <div>
+        <div id='navbar' className="mb-2">
+          <Appbar/>
+        </div>
         <div>
           <div className="grid grid-flow-col auto-cols-max flex justify-center w-full h-full">
             <div className="w-[797px] bg-red-200 grid grid-flow-col auto-cols-max">

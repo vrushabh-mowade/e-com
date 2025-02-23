@@ -23,10 +23,13 @@ customer_order_router.post('/', async (c) => {
                 apartment :body.apartment,
                 postalCode :body.postalCode,
                 status :body.status,
+                paymentStatus : body.paymentStatus,
                 city :body.city,
                 country :body.country,
                 orderNotice :body.orderNotice,
                 total :body.total,
+                cartId: body.cartId,
+                userId : body.userId,
             },
         });
         if (!customerorder) {
@@ -83,6 +86,7 @@ customer_order_router.put('/:id', async (c) => {
                 apartment :body.apartment,
                 postalCode :body.postalCode,
                 status :body.status,
+                paymentStatus : body.paymentStatus,
                 city :body.city,
                 country :body.country,
                 orderNotice :body.orderNotice,
@@ -106,6 +110,49 @@ customer_order_router.put('/:id', async (c) => {
     }
 })
 
+
+
+
+//get the customer order using the userid or carid
+customer_order_router.post('/orderdetailsexists', async (c) => {
+    const prisma = new PrismaClient({
+        //@ts-ignore
+        datasourceUrl: c.env?.DATABASE_URL,
+    }).$extends(withAccelerate());
+    try {
+        const body = await  c.req.json();
+        const userId = body.userId;
+        console.log(userId);
+        const customerorder = await prisma.customer_order.findMany({
+            where: {
+                userId : userId,
+                paymentStatus : "draft"
+            },
+        });
+        if (customerorder) {
+            if(customerorder.length === 0){
+            c.status(200);
+            return c.json({
+                customerorder: customerorder ,
+                msg : "empty"
+            })
+            }else{
+                c.status(200);
+                return c.json({
+                    customerorder: customerorder[0] ,
+                    msg : "order details fetched successfully ",})
+            }
+        }{
+            c.status(404);
+            return c.json({ error: "orderdetailsexists does not exists" })
+        }
+
+    } catch (error) {
+        console.error("error while finding the prodect", error);
+        c.status(404);
+        return c.json({ error: "error while finding the prodect" })
+    }
+});
 
 
 customer_order_router.get('/:id', async (c) => {
